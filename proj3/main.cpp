@@ -30,6 +30,8 @@ void CreateFrequencyDictionaryFromFile(ifstream& inputFile);
 void CreateTreeFromDictionary(map<int, char> frequencyDictionary);
 vector<char> characterVector; // A vector containing all of the characters of the input file
 map<int, char> frequencyDictionary; // A dictionary containing all of the characters and frequencies of the input file
+void GenerateHuffmanCodesForTree(vector<Node> nodeArray);
+void GetCodeForValue(Node *root, int frequency, string codeString = "");
 
 //Visualization Methods
 void PrintTree();
@@ -101,37 +103,66 @@ void CreateTreeFromDictionary(map<int, char> frequencyDictionary){
     }
     nodeArray;
     while(nodeArray.size() > 1){
-        Node leftNode = nodeArray.at(0);
-        cout << "Left node char: " << leftNode.character << ", freq: " << leftNode.frequency << endl;
-        Node rightNode = nodeArray.at(1);
-        cout << "Right node char: " << rightNode.character << ", freq: " << rightNode.frequency << endl;
+        Node *leftNode = new Node(nodeArray.at(0).character, nodeArray.at(0).frequency, nodeArray.at(0).leftNode, nodeArray.at(0).rightNode );
+        Node *rightNode = new Node(nodeArray.at(1).character, nodeArray.at(1).frequency, nodeArray.at(1).leftNode, nodeArray.at(1).rightNode );
 
         Node *parentNode = new Node();
-        parentNode->leftNode = &leftNode;
-        parentNode->rightNode = &rightNode;
-        parentNode->frequency = leftNode.frequency + rightNode.frequency;
+        parentNode->leftNode = leftNode;
+        parentNode->rightNode = rightNode;
+        parentNode->frequency = leftNode->frequency + rightNode->frequency;
+        bool inserted = false;
         for(int i = 0; i < nodeArray.size(); i++){
             if(parentNode->frequency < nodeArray.at(i).frequency){  //Add the parent node into the array
                 nodeArray.insert(nodeArray.begin() + i, *parentNode);
+                inserted = true;
                 break;
             }
         }
-        for(int i = 0; i < nodeArray.size(); i++){
-            if(leftNode.frequency == nodeArray.at(i).frequency || rightNode.frequency == nodeArray.at(i).frequency){
-                nodeArray.erase(nodeArray.begin() + i);
+        if(!inserted){
+            nodeArray.insert(nodeArray.begin(), *parentNode);
+        }
+        if(nodeArray.size() > 1){
+            for(int i = 0; i < nodeArray.size(); i++){
+                if(leftNode->frequency == nodeArray.at(i).frequency || rightNode->frequency == nodeArray.at(i).frequency){
+                    nodeArray.erase(nodeArray.begin() + i);
+                }
             }
         }
-        for(int i = 0; i < nodeArray.size(); i++){
-            if(leftNode.frequency == nodeArray.at(i).frequency || rightNode.frequency == nodeArray.at(i).frequency){
-                nodeArray.erase(nodeArray.begin() + i);
+        if(nodeArray.size() > 1){
+            for(int i = 0; i < nodeArray.size(); i++){
+                if(leftNode->frequency == nodeArray.at(i).frequency || rightNode->frequency == nodeArray.at(i).frequency){
+                    nodeArray.erase(nodeArray.begin() + i);
+                }
             }
         }
         //
-        cout << "Parent left node char: " << parentNode->leftNode->character << ", freq: " << parentNode->leftNode->frequency << endl;
-        cout << "Parent right node char: " << parentNode->rightNode->character << ", freq: " << parentNode->rightNode->frequency << endl;
-        cout << &nodeArray << endl;
+    }
+    GenerateHuffmanCodesForTree(nodeArray);
+}
+
+void GenerateHuffmanCodesForTree(vector<Node> nodeArray){
+    for (auto const& x : frequencyDictionary)
+    {
+        cout << "Code for character: " << x.second << " and frequency: "  << x.first << " is ";
+        GetCodeForValue(&nodeArray.at(0), x.first);
+    }
+
+}
+
+void GetCodeForValue(Node *root, int frequency, string codeString){
+    if(root != nullptr){
+        if(root->frequency == frequency){
+            cout << "Found code string!: " << codeString << endl;
+        }
+        if(root->rightNode != nullptr){
+            GetCodeForValue(root->rightNode, frequency, codeString + "1");
+        }
+        if(root->leftNode != nullptr){
+            GetCodeForValue(root->leftNode, frequency, codeString + "0");
+        }
     }
 }
+
 
 //void insert(Node *&root, int value){
 //    if(root == nullptr){    //There's no root node, set this as the root

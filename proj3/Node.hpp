@@ -46,5 +46,6 @@ public:
     
     //Constructor with value passed
     Node(char character, int frequency);
+    Node(char character, int frequency, Node *leftNode, Node *rightNode);
 };
 #endif /* Node_h */

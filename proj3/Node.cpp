@@ -11,13 +11,20 @@
 Node::Node(){
     leftNode = nullptr;
     rightNode = nullptr;
-    character = NULL;
-    frequency = NULL;
+    character = 0;
+    frequency = 0;
 }
 
 Node::Node(char character, int frequency){
     leftNode = nullptr;
     rightNode = nullptr;
+    this->character = character;
+    this->frequency = frequency;
+}
+
+Node::Node(char character, int frequency, Node *leftNode, Node *rightNode){
+    this->leftNode = leftNode;
+    this->rightNode = rightNode;
     this->character = character;
     this->frequency = frequency;
 }
